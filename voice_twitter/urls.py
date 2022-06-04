@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from sso.urls import urlpatterns
+from sso.urls import urlpatterns as sso_urls
+from dashboard.urls import urlpatterns as dashboard_urls
 
 urlpatterns = [
-    path('sso/', include(urlpatterns)),
+    path('', include(dashboard_urls)),
+    path('sso/', include(sso_urls)),
     path('admin/', admin.site.urls),
 ]
