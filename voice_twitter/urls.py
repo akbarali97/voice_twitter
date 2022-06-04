@@ -18,11 +18,9 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from sso.urls import urlpatterns as sso_urls
 from dashboard.urls import urlpatterns as dashboard_urls
-import settings
 
 urlpatterns = [
     path('', include(dashboard_urls)),
     path('sso/', include(sso_urls)),
     path('admin/', admin.site.urls),
-    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 ]
