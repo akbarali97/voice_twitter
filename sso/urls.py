@@ -1,7 +1,7 @@
-from django.urls import path
-from .views import login, home
+from django.urls import path, include
+from .views import home
 
 urlpatterns = [
     path('', home, name='sso_home'),
-    path('login', login, name='sso_login'),
+    path('accounts/', include('allauth.urls')),
 ]
