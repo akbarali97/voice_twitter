@@ -8,27 +8,31 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-
-  <div class="text-center">
-    <h1>{% trans "Sign In" %}</h1>
-
-    {% get_providers as socialaccount_providers %}
-
-    {% if socialaccount_providers %}
-    <p>
-      {% blocktrans with site.name as site_name %}
-      Please sign in with one of your existing third party accounts.
-      {% endblocktrans %}
-    </p>
-
-    <div class="socialaccount_ballot">
-
-      <div class="socialaccount_providers">
-        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-auto shadow border rounded m-5 p-5">
+      <div class="text-center">
+        <h1>{% trans "Sign In" %}</h1>
+        {% get_providers as socialaccount_providers %}
+    
+        {% if socialaccount_providers %}
+        <p>
+          {% blocktrans with site.name as site_name %}
+          Please sign in with one of your existing third party accounts.
+          {% endblocktrans %}
+        </p>
+    
+        <div class="socialaccount_ballot">
+    
+          <div class="socialaccount_providers">
+            {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+          </div>
+    
+        </div>
+        {% endif %}
       </div>
-
     </div>
-    {% endif %}
   </div>
+</div>
 
 {% endblock %}
