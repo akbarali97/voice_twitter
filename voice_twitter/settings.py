@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG',default=True)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['intense-shore-42977.herokuapp.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
