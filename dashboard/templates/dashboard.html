@@ -1,6 +1,117 @@
 {% extends 'base.html' %}
+{% load static %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
+<style>
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>hello</h1>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-6 shadow min-vh-100">
+            <div class="row pill shadow mx-1 my-5 py-5 px-1 justify-content-between" style="background-color: #F6F5F8 !important;">
+                <div class="col-10">
+                    <span>
+                        <div id="whats-on-your-mind" class="" style="font-size: xx-large;">Whats on your mind?</div>
+                    </span>
+                    <span>
+                        <audio
+                            id="equilizer"
+                            controls="controls"
+                            class="op-player__media rounded d-none"
+                            style="height: 100%; background-color: #212529;">
+                        </audio>
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <button class="btn" id="record-tweet">
+                        <i class="bi bi-mic-fill" style="font-size: xx-large;"></i>
+                    </button>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="row">
+                        <button id="tweet-btn" class="col btn btn-primary mx-3" disabled>Tweet!</button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_script %}
+    <script src="{% static 'js/audio-recorder.js' %}"></script>
+
+    <script>
+        let recording = false;
+        let audio = false;
+        $(document).ready(function() {
+            // to set any default setting on page ready!
+        });
+
+        function blobToBase64(blob) {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            return new Promise(resolve => {
+                reader.onloadend = () => {resolve(reader.result);};
+            });
+        }
+
+        $('#record-tweet').on('click', async function ( event) {
+            const recorder = await recordAudio();
+            recorder.start();
+            recording = true;
+            $(this).children('i').addClass('text-danger')
+            $('#whats-on-your-mind').removeClass('d-none');
+            $('#equilizer').addClass('d-none');
+            setTimeout(async () => {
+                audio = await recorder.stop();
+                if (audio !== false) {
+                    recording = false;
+                    $('#equilizer').attr('src',audio.audioUrl);
+                    $(this).children('i').removeClass('text-danger');
+                    $('#whats-on-your-mind').addClass('d-none');
+                    $('#equilizer').removeClass('d-none');
+                    $('#tweet-btn').removeAttr('disabled');
+                }
+            }, 3000);
+        });
+        
+        $('#tweet-btn').on('click', (event) => {
+            if(audio !== false) {
+
+                function getCookie(c_name) {
+                    if (document.cookie.length > 0) {
+                        c_start = document.cookie.indexOf(c_name + "=");
+                        if (c_start != -1) {
+                            c_start = c_start + c_name.length + 1;
+                            c_end = document.cookie.indexOf(";", c_start);
+                            if (c_end == -1) c_end = document.cookie.length;
+                                return unescape(document.cookie.substring(c_start,c_end));
+                        }
+                    }
+                    return "";
+                    }
+
+                    const formData = new FormData();
+                    formData.append('audio-file', audio.audioBlob);
+                    fetch(
+                        url='{% url "post_tweet_ajax" %}',
+                        {
+                            method: 'POST',
+                            body: formData,
+                            headers: { "X-CSRFToken": getCookie("csrftoken") },
+                        }).then((res) => {
+                            console.log(res)
+                        }).catch((res) => {
+                            console.log(res)
+                        })
+            }
+        });
+    </script>
 {% endblock %}
