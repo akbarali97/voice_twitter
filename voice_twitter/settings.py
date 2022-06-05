@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sso.apps.SsoConfig',
+    'dashboard.apps.DashboardConfig',
     'django.contrib.sites',
 
     # AllAuth sso providers
