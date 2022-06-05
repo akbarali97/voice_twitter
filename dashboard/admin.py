@@ -1,8 +1,10 @@
 from django.contrib import admin
-
-# Register your models here.
-from .models import Tweet
+from .models import Tweet, Comment
 
 @admin.register(Tweet)
 class TweetAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
     pass
