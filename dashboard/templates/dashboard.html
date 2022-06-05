@@ -4,6 +4,36 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
 <style>
+.pulse {
+  box-shadow: 0 0 0 rgba(0,0,0, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(0,0,0, 0.5);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 50px rgba(0,0,0, 0);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(0,0,0, 0);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(0,0,0, 0.5);
+    box-shadow: 0 0 0 0 rgba(0,0,0, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 15px rgba(0,0,0, 0);
+      box-shadow: 0 0 0 15px rgba(0,0,0, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(0,0,0, 0);
+      box-shadow: 0 0 0 0 rgba(0,0,0, 0);
+  }
+}
 </style>
 {% endblock %}
 
@@ -14,7 +44,7 @@
             <div class="row pill shadow mx-1 my-5 py-5 px-1 justify-content-between" style="background-color: #F6F5F8 !important;">
                 <div class="col-10">
                     <span>
-                        <div id="whats-on-your-mind" class="" style="font-size: xx-large;">Whats on your mind?</div>
+                        <div id="whats-on-your-mind" class="" style="font-size: xx-large;">What's on your mind?</div>
                     </span>
                     <span>
                         <audio
@@ -26,7 +56,7 @@
                     </span>
                 </div>
                 <div class="col-auto">
-                    <button class="btn" id="record-tweet">
+                    <button class="btn pulse" id="record-tweet">
                         <i class="bi bi-mic-fill" style="font-size: xx-large;"></i>
                     </button>
                 </div>
@@ -37,7 +67,32 @@
                 </div>
             </div>
             <hr>
-        </div>
+            {% for i in tweets %}
+            <div class="row  my-3 mx-1 py-5 shadow border">
+                <div class="col-2"  style="background-color: #F6F5F8;">
+                    <img src="{% static 'images/user_placeholder.png' %}" class="img img-fluid">
+                </div>
+                <div class="col-8">
+                    <div class="row justify-content-between pb-3">
+                        <div class="col-auto">{{i.user}}</div>
+                        <div class="col-auto"><small class="text-muted">{{i.timestamp}}</small></div>
+                    </div>
+                    <div class="row"><div class="col-12">
+                        <audio
+                            src="{{i.tweet.url}}"
+                            controls="controls"
+                            class="op-player__media rounded"
+                            style="height: 100%; background-color: #212529;"
+                            >
+                        </audio>
+                    </div></div>
+                </div>
+                <div class="col-12 mt-3">
+                    <a class="text-muted">Load comments</a>
+                </div>
+            </div>
+            {% endfor %}
+
     </div>
 </div>
 
@@ -66,6 +121,7 @@
             const recorder = await recordAudio();
             recorder.start();
             recording = true;
+            $(this).removeClass('pulse');
             $(this).children('i').addClass('text-danger')
             $('#whats-on-your-mind').removeClass('d-none');
             $('#equilizer').addClass('d-none');
@@ -74,6 +130,7 @@
                 if (audio !== false) {
                     recording = false;
                     $('#equilizer').attr('src',audio.audioUrl);
+                    $(this).addClass('pulse');
                     $(this).children('i').removeClass('text-danger');
                     $('#whats-on-your-mind').addClass('d-none');
                     $('#equilizer').removeClass('d-none');
@@ -101,7 +158,7 @@
                     const formData = new FormData();
                     formData.append('audio-file', audio.audioBlob);
                     fetch(
-                        url='{% url "post_tweet_ajax" %}',
+                        url='{% url "post_tweet" %}',
                         {
                             method: 'POST',
                             body: formData,
