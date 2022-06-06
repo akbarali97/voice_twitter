@@ -166,9 +166,9 @@ if not DEBUG:
     AWS_S3_CUSTOM_DOMAIN = '{}.s3.filebase.com'.format(AWS_STORAGE_BUCKET_NAME)
 
     AWS_LOCATION = 'static'
-    STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    # STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
     MEDIA_URL = 'https://{}/media/'.format(AWS_S3_CUSTOM_DOMAIN)
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Default primary key field type
