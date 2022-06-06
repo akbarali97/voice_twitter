@@ -4,6 +4,9 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
 <style>
+.comments-link {
+    cursor: pointer;
+}
 .pulse {
   box-shadow: 0 0 0 rgba(0,0,0, 0.4);
   animation: pulse 2s infinite;
@@ -88,8 +91,43 @@
                     </div></div>
                 </div>
                 <div class="col-12 mt-3">
-                    <a class="text-muted">Load comments</a>
+                    <a class="text-muted comments-link">Load comments</a>
                 </div>
+                <div class="col-12 comments-div" style="background-color: #F6F5F8;">
+                    {% for j in i.comments.all %}
+                    <div class="row py-2 px-1">
+                        <div class="col-2 text-truncate">
+                            <div class="d-block">
+                                <img src="{% static 'images/user_placeholder.png' %}" width="40px">
+                            </div>
+                            <div><small>{{ j.user }}</small></div>
+                        </div>
+                        <div class="col">
+                            <audio
+                                src="{{j.comment.url}}"
+                                controls="controls"
+                                class="op-player__media rounded">
+                            </audio>
+                        </div>
+                    </div>
+                    <hr class="m-0 p-0">
+                    {% endfor %}
+                    <div class="row my-2 bg-white rounded-pill border">
+                        <div class="col opinion-div text-muted"><span class="pt-2">What's your opinion?</span></div>
+                        <div class="col player-div d-none">
+                            <audio
+                                controls="controls"
+                                class="op-player__media rounded">
+                            </audio>
+                        </div>
+                        <div class="col-1">
+                            <button class="btn cmt-recorder">
+                                <i class="bi bi-mic-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             {% endfor %}
 
@@ -107,6 +145,22 @@
         let audio = false;
         $(document).ready(function() {
             // to set any default setting on page ready!
+            $('.cmt-recorder').on('click', async (event) => {
+                const recorder = await recordAudio();
+                recorder.start();
+                $(this).children('i').addClass('text-danger');
+                $(this).parent().siblings('.opinion-div').removeClass('d-none');
+                $(this).parent().siblings('.player-div').addClass('d-none');
+                setTimeout(async () => {
+                    const cmt_audio = await recorder.stop();
+                    $(this).parent().siblings('.player-div').children('audio').attr('src',cmt_audio.audioUrl);
+                    $(this).children('i').removeClass('text-danger');
+                    $(this).parent().siblings('.opinion-div').addClass('d-none');
+                    $(this).parent().siblings('.player-div').removeClass('d-none');
+                    },
+                    3000 // Here we mention the max audio recording seconds.
+                );
+            });
         });
 
         function blobToBase64(blob) {
@@ -136,7 +190,9 @@
                     $('#equilizer').removeClass('d-none');
                     $('#tweet-btn').removeAttr('disabled');
                 }
-            }, 3000);
+            },
+            5000 // Here we mention the max audio recording seconds.
+        );
         });
         
         $('#tweet-btn').on('click', (event) => {
@@ -164,9 +220,10 @@
                             body: formData,
                             headers: { "X-CSRFToken": getCookie("csrftoken") },
                         }).then((res) => {
+                            window.location.reload();
                             console.log(res)
                         }).catch((res) => {
-                            console.log(res)
+                            window.location.reload();
                         })
             }
         });
