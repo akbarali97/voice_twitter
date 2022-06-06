@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     # Other packages
     'crispy_forms',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -155,6 +156,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'live-static','static-root')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'live-static','media-root')
+
+if not DEBUG:
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL')
+
+    AWS_S3_CUSTOM_DOMAIN = '{}.s3.filebase.com'.format(AWS_STORAGE_BUCKET_NAME)
+
+    AWS_LOCATION = 'static'
+    STATIC_URL = 'https://{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    MEDIA_URL = 'https://{}/media/'.format(AWS_S3_CUSTOM_DOMAIN)
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
