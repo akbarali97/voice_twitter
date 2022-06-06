@@ -7,5 +7,5 @@ urlpatterns = [
     path('', home, name='home'),
     path('post_tweet', post_tweet, name='post_tweet'),
 ]
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
