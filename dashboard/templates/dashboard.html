@@ -113,15 +113,22 @@
                     <hr class="m-0 p-0">
                     {% endfor %}
                     <div class="row my-2 bg-white rounded-pill border">
-                        <div class="col opinion-div text-muted"><span class="pt-2">What's your opinion?</span></div>
+                        <div class="col opinion-div mt-2"><span class="align-middle text-muted">What's your opinion?</span></div>
                         <div class="col player-div d-none">
-                            <audio
-                                controls="controls"
-                                class="op-player__media rounded">
-                            </audio>
+                            <div class="row mt-2">
+                                <div class="col-auto">
+                                    <button class="btn btn-danger post_cmt">Post</button>
+                                </div>
+                                <div class="col">
+                                    <audio
+                                        controls="controls"
+                                        class="op-player__media rounded">
+                                    </audio>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-1">
-                            <button class="btn cmt-recorder">
+                            <button class="btn cmt-recorder mt-2">
                                 <i class="bi bi-mic-fill"></i>
                             </button>
                         </div>
@@ -145,15 +152,16 @@
         let audio = false;
         $(document).ready(function() {
             // to set any default setting on page ready!
-            $('.cmt-recorder').on('click', async (event) => {
+            $('.cmt-recorder').on('click', async function (event) {
                 const recorder = await recordAudio();
                 recorder.start();
                 $(this).children('i').addClass('text-danger');
                 $(this).parent().siblings('.opinion-div').removeClass('d-none');
                 $(this).parent().siblings('.player-div').addClass('d-none');
+                $(this).parent().siblings('.player-div').addClass('d-none');
                 setTimeout(async () => {
                     const cmt_audio = await recorder.stop();
-                    $(this).parent().siblings('.player-div').children('audio').attr('src',cmt_audio.audioUrl);
+                    $(this).parent().siblings('.player-div').find('audio').attr('src',cmt_audio.audioUrl);
                     $(this).children('i').removeClass('text-danger');
                     $(this).parent().siblings('.opinion-div').addClass('d-none');
                     $(this).parent().siblings('.player-div').removeClass('d-none');
