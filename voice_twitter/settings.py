@@ -168,6 +168,7 @@ if not DEBUG:
     AWS_LOCATION = 'media'
     MEDIA_URL = 'https://{}/media/'.format(AWS_S3_CUSTOM_DOMAIN)
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_S3_FILE_OVERWRITE = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
