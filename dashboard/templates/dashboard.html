@@ -118,6 +118,7 @@
                             <div class="row mt-2">
                                 <div class="col-auto">
                                     <button class="btn btn-danger post_cmt">Post</button>
+                                    <div class="d-none tweet_id">{{i.id}}</div>
                                 </div>
                                 <div class="col">
                                     <audio
@@ -150,6 +151,20 @@
     <script>
         let recording = false;
         let audio = false;
+
+        function getCookie(c_name) {
+            if (document.cookie.length > 0) {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1) {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                        return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+
         $(document).ready(function() {
             // to set any default setting on page ready!
             $('.cmt-recorder').on('click', async function (event) {
@@ -169,15 +184,29 @@
                     3000 // Here we mention the max audio recording seconds.
                 );
             });
-        });
 
-        function blobToBase64(blob) {
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            return new Promise(resolve => {
-                reader.onloadend = () => {resolve(reader.result);};
+            // This is triggered when post button is clicked for a comment under a tweet.
+            $('.post_cmt').on('click', async function (event) {
+                const audio_url = $(this).parent().siblings().find('audio').attr('src');
+                const tweet_id = $(this).siblings('div').text();
+                const blob = await fetch(audio_url).then(r => r.blob());
+                console.log(audio_url);
+                console.log(tweet_id);
+                if(blob !== false) {
+                    const formData = new FormData();
+                    formData.append('audio-file', blob);
+                    formData.append('tweet_id', tweet_id);
+                    fetch(url='{% url "post_comment" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { "X-CSRFToken": getCookie("csrftoken") },
+                    }).then((res) => { window.location.reload();
+                    }).catch((res) => { window.location.reload();
+                    })
+                }
             });
-        }
+
+        });
 
         $('#record-tweet').on('click', async function ( event) {
             const recorder = await recordAudio();
@@ -205,34 +234,15 @@
         
         $('#tweet-btn').on('click', (event) => {
             if(audio !== false) {
-
-                function getCookie(c_name) {
-                    if (document.cookie.length > 0) {
-                        c_start = document.cookie.indexOf(c_name + "=");
-                        if (c_start != -1) {
-                            c_start = c_start + c_name.length + 1;
-                            c_end = document.cookie.indexOf(";", c_start);
-                            if (c_end == -1) c_end = document.cookie.length;
-                                return unescape(document.cookie.substring(c_start,c_end));
-                        }
-                    }
-                    return "";
-                    }
-
-                    const formData = new FormData();
-                    formData.append('audio-file', audio.audioBlob);
-                    fetch(
-                        url='{% url "post_tweet" %}',
-                        {
-                            method: 'POST',
-                            body: formData,
-                            headers: { "X-CSRFToken": getCookie("csrftoken") },
-                        }).then((res) => {
-                            window.location.reload();
-                            console.log(res)
-                        }).catch((res) => {
-                            window.location.reload();
-                        })
+                const formData = new FormData();
+                formData.append('audio-file', audio.audioBlob);
+                fetch(url='{% url "post_tweet" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { "X-CSRFToken": getCookie("csrftoken") },
+                }).then((res) => { window.location.reload();
+                }).catch((res) => { window.location.reload();
+                })
             }
         });
     </script>
